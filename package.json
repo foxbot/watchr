@@ -1,0 +1,14 @@
+{
+  "name": "watchr",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Christopher F. <foxbot@protonmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "mithril": "^1.1.6"
+  },
+  "scripts": {
+    "build": "bundle frontend/index.js --output wwwroot/app.js --minify",
+    "run": "bundle frontend/index.js --output wwwroot/app.js --watch"
+  }
+}
