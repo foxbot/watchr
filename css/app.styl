@@ -1,0 +1,121 @@
+$bg = rgb(10, 10, 20)
+$bg-light = rgb(15, 15, 25)
+$bg-accent = rgb(55, 55, 55)
+
+$fg = rgb(200, 200, 200)
+
+$font = Helvetica, Arial, sans-serif
+
+@import 'scrollbar'
+
+html,
+body
+    width: 100vw
+    height: 100vh
+    margin: 0
+
+    font-family: $font
+    color: $fg
+
+#root
+    display: flex
+
+    background-color: limegreen // expose errors easier
+
+.pane-media
+    min-height: 100vh
+    flex: auto
+
+    background-color: $bg
+
+.pane-chat
+    display: flex
+    flex-direction: column
+    flex-wrap: nowrap
+
+    min-height: 100vh
+    width: 30%
+
+    border-left: 1px solid $bg-accent
+    background-color: $bg-light
+
+    &.hidden
+        display: none
+
+*, ::before, ::after
+    box-sizing: inherit
+
+.chat
+    align-self: flex-start
+    flex: 1
+    flex-basis: 0
+
+    width: 100%
+    overflow: hidden
+    overflow-y: scroll
+
+.line
+    margin: 2px
+    
+.line-system
+    text-align: center
+    font-style: italic
+
+    &:before
+        content: '*'
+    &:after
+        content: '*'
+
+.line-time
+    font-weight: lighter
+
+.line-author
+    margin-left: 2px
+    font-weight: bold
+
+.line-content
+    margin-left: 2px
+
+.chatbox
+    align-self: flex-end
+
+    display: block
+    margin-left: auto
+    margin-right: auto
+    margin-top: 12px
+    margin-bottom: 28px
+    width: 95%
+    resize: none
+
+    font-family: $font
+    background-color: $bg
+    color: $fg
+    border: 1px solid $bg
+    border-radius: 4px
+
+.about
+    display: inline-block
+    position: absolute
+    bottom: 0
+    right: 0
+
+    background-color: $bg-accent
+    border: 2px solid $bg-accent
+    opacity: .20
+    border-top-left-radius: 2px
+
+.about-name
+    margin-left: 2px
+    margin-right: 4px
+    margin-top: 3px
+
+    font-weight: bold
+    font-style: italic
+
+.about-ver
+    margin-right: 4px
+
+.about-icons
+    margin-right: 4px
+    &>*
+        margin-left: 1px

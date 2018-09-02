@@ -9,7 +9,11 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var gatewayUpgrader = websocket.Upgrader{}
+var gatewayUpgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true // TODO: security alert
+	},
+}
 
 func (w *Watchr) onGateway(rw http.ResponseWriter, r *http.Request) {
 	conn, err := gatewayUpgrader.Upgrade(rw, r, nil)

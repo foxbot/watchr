@@ -1,0 +1,18 @@
+{
+  "name": "watchr",
+  "version": "1.0.0",
+  "main": "index.html",
+  "repository": "https://github.com/foxbot/watchr",
+  "author": "Christopher F <foxbot@protonmail.com>",
+  "license": "ISC",
+  "private": true,
+  "devDependencies": {
+    "coffeescript": "^2.3.1",
+    "coffescript": "^0.0.1-security",
+    "parcel-bundler": "^1.9.7",
+    "stylus": "^0.54.5"
+  },
+  "dependencies": {
+    "mithril": "^1.1.6"
+  }
+}
