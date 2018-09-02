@@ -1,8 +1,10 @@
 import m from 'mithril'
 
 export chatView = (vnode) ->
-    chat.node = vnode
-    chatbox.node = vnode
+    vnode.state.api.onChat = (line) ->
+        chat.append line
+
+    chatbox.api = vnode.state.api
 
     m '.pane-chat', [
         m chat
@@ -11,7 +13,6 @@ export chatView = (vnode) ->
     ]
 
 chat =
-    node: null
     lines: []
 
     append: (line) ->
@@ -45,7 +46,7 @@ newSystemLine = (content) ->
     }
 
 chatbox =
-    node: null
+    api: null
 
     view: ->
         m 'textarea.chatbox', { onkeypress: chatbox.onkey }
@@ -61,11 +62,7 @@ chatbox =
             arg = input.substring 6
             m.route.set "/room/#{arg}"
             chat.append newSystemLine "moved to room #{arg}."
-            chatbox.node.state.api.changeRoom()
-        else if input.startsWith '/connect'
-            chat.append newSystemLine "connecting:)"
-            console.log chatbox.node.state
-            chatbox.node.state.api.connect()
+            chatbox.api.changeRoom()
         else
             chat.append newChatLine 'anonymous', input
         

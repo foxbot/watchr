@@ -26,7 +26,7 @@ class State
         identify = {
             Op: Op.Identify,
             Data: {
-                Channel: me.room
+                Room: me.room
             }
         }
         me.sock.send(identify)
@@ -40,6 +40,9 @@ class State
     onError: (me, e) ->
         console.error e
     
+    onChat: (line) ->
+        console.error 'chat never initialized...'
+    
     updateRoom: ->
         @room = m.route.param().id
         
@@ -47,6 +50,8 @@ class State
 export class Component
     oninit: (vnode) ->
         state = new State
+        state.connect()
+
         vnode.state.api = state
 
         # TODO: remove
