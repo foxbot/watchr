@@ -14,5 +14,9 @@
   },
   "dependencies": {
     "mithril": "^1.1.6"
+  },
+  "scripts": {
+    "run": "parcel index.html",
+    "build": "parcel build index.html"
   }
 }
