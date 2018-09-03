@@ -10,13 +10,14 @@ export class Commands
         input = input.substring 1
         parts = input.split ' '
         command = parts[0].toLowerCase()
+        m = '_'+command
 
-        if this[command]?
-            this[command](parts[1..])
+        if this[m]?
+            this[m](parts[1..])
         else
             this.onChat newSystemLine "command '#{command}' does not exist"
     
-    room: (args) ->
+    _room: (args) ->
         name = args[0]
         if not name
             this.onChat newSystemLine 'usage: /room <room>'
@@ -24,7 +25,7 @@ export class Commands
 
         @api.sendRoom name
 
-    name: (args) ->
+    _name: (args) ->
         if args.length > 1
             this.onChat newSystemLine 'usage: /name <name>'
             return
@@ -36,5 +37,5 @@ export class Commands
         
         @api.sendName name
     
-    clear: (args) ->
+    _clear: (args) ->
         @chat.lines = []
