@@ -11,16 +11,24 @@ type Watchr struct {
 	errors chan error
 	host   string
 
-	clients  map[string]connInfo
-	channels map[string]string
+	clients map[string]*connInfo
+	rooms   map[string]*roomInfo
 }
 
 // NewWatchr generates a new Watchr application
 func NewWatchr(host string) *Watchr {
-	return &Watchr{
+	w := &Watchr{
 		errors: make(chan error),
 		host:   host,
+
+		clients: make(map[string]*connInfo),
+		rooms:   make(map[string]*roomInfo),
 	}
+	w.rooms["lobby"] = &roomInfo{
+		mediaType: MediaText,
+		media:     "welcome to my lobby :)",
+	}
+	return w
 }
 
 // Run the Watchr server

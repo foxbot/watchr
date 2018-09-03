@@ -1,14 +1,16 @@
 import m from 'mithril'
-import { mainView } from './views/main.coffee'
 import { Config, Op } from './config.coffee'
+import { mainView } from './views/main.coffee'
+import { newChatLine, newSystemLine } from './views/chat.coffee'
 
 class State
     constructor: ->
         @room = m.route.param().id
+        @name = localStorage.getItem 'name' or ''
+        @media = null
     
     connect: ->
         url = "ws://#{Config.Api}/gateway"
-        console.log 'connecting on', url
 
         @sock = new WebSocket url
 
@@ -19,32 +21,90 @@ class State
         @sock.onerror = (e) -> _this.onError _this, e
     
     close: ->
-        @sock.close(1000)
+        @sock.close 1000
 
     onOpen: (me, e) ->
-        console.log e
+        me.onChat newSystemLine 'connected!'
+
         identify = {
-            Op: Op.Identify,
-            Data: {
-                Room: me.room
+            op: Op.Identify,
+            data: {
+                room: me.room
+                name: me.name
             }
         }
-        me.sock.send(identify)
+        me.sock.send JSON.stringify identify
 
     onMessage: (me, e) ->
-        console.log e
+        data = JSON.parse e.data
+        switch data.op
+            when Op.Chat then me.onRawChat data.data
+            when Op.UserUpdate then me.onUserUpdate data.data
+            when Op.RoomUpdate then me.onRoomUpdate data.data
+            else console.error 'unknown opcode!', e
 
     onClose: (me, e) ->
-        console.log e
-    
+        me.onChat newSystemLine 'disconnected, try refreshing.'
+
     onError: (me, e) ->
         console.error e
+
+    onRawChat: (data) ->
+        this.onChat newChatLine data.author, data.content
+
+    onUserUpdate: (data) ->
+        this.setName data.name if data.name? and data.name
+        this.setRoom data.room if data.room? and data.room
     
+    onRoomUpdate: (data) ->
+        @media = {
+            media_type: data.media_type
+            media: data.media
+        }
+        m.redraw()
+    
+    # this is re-set by chat.coffee
     onChat: (line) ->
         console.error 'chat never initialized...'
     
-    updateRoom: ->
-        @room = m.route.param().id
+    setName: (name) ->
+        @name = name
+        localStorage.setItem 'name', name
+
+        this.onChat newSystemLine "you are now known as '#{name}'"
+    
+    setRoom: (room) ->
+        @room = room
+        m.route.set "/room/#{room}"
+
+        this.onChat newSystemLine "switched to room '#{room}'."
+    
+    sendChat: (content) ->
+        chat = {
+            op: Op.Chat,
+            data: {
+                content: content
+            }
+        }
+        @sock.send JSON.stringify chat
+    
+    sendName: (content) ->
+        payload = {
+            op: Op.UserSet
+            data: {
+                name: content
+            }
+        }
+        @sock.send JSON.stringify payload
+    
+    sendRoom: (content) ->
+        payload = {
+            op: Op.UserSet
+            data: {
+                room: content
+            }
+        }
+        @sock.send JSON.stringify payload
         
 
 export class Component

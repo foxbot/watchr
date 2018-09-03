@@ -1,5 +1,18 @@
 import m from 'mithril'
 
+export newChatLine = (author, content) -> 
+    return {
+        time: new Date
+        author: author
+        content: content
+    }
+
+export newSystemLine = (content) ->
+    return {
+        system: true
+        content: content
+    }
+
 export chatView = (vnode) ->
     vnode.state.api.onChat = (line) ->
         chat.append line
@@ -14,14 +27,20 @@ export chatView = (vnode) ->
 
 chat =
     lines: []
+    scroll: true
 
     append: (line) ->
+
         chat.lines.push line
-        m.redraw
+        m.redraw()
 
     view: ->
         # todo: perf, is this rerendering everything all the time?
         m '.chat.scroller', chat.lines.map (line) -> formatLine line
+    
+    onupdate: (vnode) ->
+        if chat.scroll
+            vnode.dom.scrollTop = vnode.dom.scrollHeight
 
 formatLine = (line) ->
     l = if line.system? then '.line.line-system' else '.line'
@@ -31,19 +50,6 @@ formatLine = (line) ->
         m 'span.line-content', line.content
     ]
     
-
-newChatLine = (author, content) -> 
-    return {
-        time: new Date
-        author: author
-        content: content
-    }
-
-newSystemLine = (content) ->
-    return {
-        system: true
-        content: content
-    }
 
 chatbox =
     api: null
@@ -60,11 +66,15 @@ chatbox =
         # TODO: sweeter command parsing
         if input.startsWith '/room '
             arg = input.substring 6
-            m.route.set "/room/#{arg}"
-            chat.append newSystemLine "moved to room #{arg}."
-            chatbox.api.changeRoom()
+            chatbox.api.sendRoom arg
+        else if input.startsWith '/name '
+            arg = input.substring 6
+            chatbox.api.sendName arg
+        else if input.startsWith '/clear'
+            chat.lines = []
+            chat.append newSystemLine 'chat cleared.'
         else
-            chat.append newChatLine 'anonymous', input
+            chatbox.api.sendChat input
         
         return false
 
