@@ -1,4 +1,5 @@
 import m from 'mithril'
+import { Commands } from '../commands.coffee'
 
 export newChatLine = (author, content) -> 
     return {
@@ -14,10 +15,13 @@ export newSystemLine = (content) ->
     }
 
 export chatView = (vnode) ->
-    vnode.state.api.onChat = (line) ->
-        chat.append line
+    vnode.state.api.onChat = chat.append
+
+    commands = new Commands vnode.state.api, chat
+    commands.onChat = chat.append
 
     chatbox.api = vnode.state.api
+    chatbox.commands = commands
 
     m '.pane-chat', [
         m chat
@@ -53,6 +57,7 @@ formatLine = (line) ->
 
 chatbox =
     api: null
+    commands: null
 
     view: ->
         m 'textarea.chatbox', { onkeypress: chatbox.onkey }
@@ -63,16 +68,8 @@ chatbox =
         input = e.target.value
         e.target.value = ""
 
-        # TODO: sweeter command parsing
-        if input.startsWith '/room '
-            arg = input.substring 6
-            chatbox.api.sendRoom arg
-        else if input.startsWith '/name '
-            arg = input.substring 6
-            chatbox.api.sendName arg
-        else if input.startsWith '/clear'
-            chat.lines = []
-            chat.append newSystemLine 'chat cleared.'
+        if input.startsWith '/'
+            chatbox.commands.onCommand input
         else
             chatbox.api.sendChat input
         
