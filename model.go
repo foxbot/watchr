@@ -2,9 +2,35 @@ package watchr
 
 import (
 	"encoding/json"
-	
+	"time"
+
 	"github.com/gorilla/websocket"
 )
+
+// Room contains information about a room
+type Room struct {
+	ID          int
+	OwnerID     int
+	Name        string
+	MediaType   string
+	MediaSource string
+
+	CreatedAt  time.Time
+	ModifiedAt time.Time
+}
+
+// User contains information about a user
+type User struct {
+	ID    int
+	Name  string
+	Token string
+	Email string
+	Level int
+
+	CreatedAt time.Time
+}
+
+// TODO: clean up garbage
 
 type connInfo struct {
 	conn *websocket.Conn
@@ -14,7 +40,7 @@ type connInfo struct {
 
 type roomInfo struct {
 	mediaType string
-	media string
+	media     string
 }
 
 const (

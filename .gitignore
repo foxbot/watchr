@@ -83,3 +83,4 @@ typings/
 
 dist/
 .cache/
+watchr.db
